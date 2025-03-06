@@ -63,7 +63,9 @@ class QW_base(ABC):
     
     def run(self,steps,**kwargs) -> torch.tensor :
         st_type = kwargs.get("state", "Gaussian")
-        state = self.st_gen.generate(st_type)
+        mu = kwargs.get("mu",self.dim // 2)
+        sigma = kwargs.get("sigma",self.dim / 40)
+        state = self.st_gen.generate(st_type,mu = mu, sigma = sigma)
         data = self.st_gen.get_prob(state).unsqueeze(0)
         for _ in range(steps):
             state = self.U @ state
