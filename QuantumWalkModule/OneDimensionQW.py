@@ -5,7 +5,6 @@ import torch
 from QuantumWalkModule.Operator import Op
 from QuantumWalkModule.StatesPreparation import States
 import numpy as np
-import matplotlib.pyplot as plt
 from abc import ABC,abstractmethod
 
 ###########################################################################
@@ -51,22 +50,35 @@ class QW_base_pure(QW_base,ABC):
         state = self.st_gen.generate(st_type, mu = mu, sigma = sigma)
         data = self.st_gen.get_prob(state).unsqueeze(0)
         for _ in range(steps):
-            state = self.U @ state
+            state = self.make_step(state)
             new_data = self.st_gen.get_prob(state).unsqueeze(0)
             data = torch.concat((data,new_data),dim = 0)
         return data
     
+    @abstractmethod
+    def make_step(self,state : torch.tensor) -> torch.tensor:
+        raise NotImplementedError
+    
 ###########################################################################
-# This class implements the simple one - dimensional QW 
+# This class extends the simple one - dimensional QW 
 # With uniform coin and pure state evolution
 
-class QW_1d(QW_base_pure):
+class QW_1d_uniform_coined(QW_base_pure,ABC):
     def Coin(self,**kwargs) -> torch.tensor:
         th = kwargs.get("th", np.pi / 4)
         E,U = torch.linalg.eig(Op.sy)
         coin = U @ torch.diag(torch.exp(-1j * E * th / 2)) @ U.conj().T
         return torch.kron(torch.eye(self.dim),coin)
     
+###########################################################################
+# This class implements the simple one - dimensional QW 
+# With uniform coin and pure state evolution with 
+# U = SC. 
+    
+class QW_1d(QW_1d_uniform_coined):
+    def make_step(self, state : torch.tensor) -> torch.tensor:
+        return self.U @ state
+
 ###########################################################################
 # This abstract class extends the idea of QW with 
 # evolution of mixed state with dm state. 
