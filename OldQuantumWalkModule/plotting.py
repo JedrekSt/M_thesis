@@ -47,8 +47,8 @@ def berry_bloch_phase(th1,th2,ns,th_1,th_2,data_ans):
 
     cax = ax2.contourf(th_1,th_2,data_ans/np.pi,cmap = "viridis", levels = 1)
     fig.colorbar(cax)
-    ax2.set_xlabel(r"$\theta_{-}$")
-    ax2.set_ylabel(r"$\theta_{+}$")
+    ax2.set_xlabel(r"$\theta_{+}$")
+    ax2.set_ylabel(r"$\theta_{-}$")
     #ax2.set_title("winding number for single step QW")
     ax2.scatter([th1],[th2],color="red", alpha = 0.7)
 
