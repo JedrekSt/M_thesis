@@ -1,3 +1,11 @@
 /QuantumWalkModule/__pycache__/
 /OldQuantumWalkModule/__pycache__/
 /Notes/
+__pycache__/
+.DS_Store/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+*.egg
+*.log
