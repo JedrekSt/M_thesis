@@ -84,7 +84,7 @@ class QuantumWalk:
 
     def get_Shift(self):
         Sh = Shift(self.qbits)
-        return Sh.Sr.to_gate().control(1),Sh.Sl.to_gate().control(1)
+        return Sh.Sr.to_gate(label = "Step_right").control(1),Sh.Sl.to_gate(label = "Step_left").control(1)
     
     def get_Coin(self,theta):
         qc = QuantumCircuit(self.qbits+1)
