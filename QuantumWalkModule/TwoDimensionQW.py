@@ -1,9 +1,6 @@
 import numpy as np
-import matplotlib.pyplot as plt
 import torch
 from abc import ABC, abstractmethod
-
-from scipy.linalg import expm
 
 class Walk_prototype(ABC):
   def __init__(self,dimx,dimy,x_coin_dict,y_coin_dict,initial_state_dict,device = "cpu"):
@@ -37,8 +34,7 @@ class Walk_prototype(ABC):
   def Get_prob(self):
     return (torch.abs(self.state[:,:,0])**2 + torch.abs(self.state[:,:,1])**2).to("cpu")
 
-
-class SimpleWalk2D(Walk_prototype):
+class SimpleWalk2D(Walk_prototype, ABC):
   def Coin(self,**kwargs):
     th = kwargs.get("th")
 
@@ -50,20 +46,23 @@ class SimpleWalk2D(Walk_prototype):
     Id = torch.ones(size = (self.dy,self.dx), dtype = torch.complex64)
     Id = Id.unsqueeze(2).to(self.device)
     return Id * rot
+  
+class MagneticWalk(SimpleWalk2D, ABC):
+  def __init__(self, dimx, dimy, x_coin_dict, y_coin_dict, initial_state_dict, B , device = "cpu") -> None:
+    super().__init__(dimx, dimy, x_coin_dict, y_coin_dict, initial_state_dict, device = device)
+    self.F = self.Magnetic_phase(B)
 
-  def Initial_state(self, **kwargs):
-    st = torch.zeros(size = (self.dy,self.dx), dtype = torch.complex64)
-    st[self.dx // 2, self.dy // 2] = 1
-    st = st.unsqueeze(2).to(self.device)
-
-    a = kwargs.get("a",1)
-    b = kwargs.get("b",1j)
-
-    cs = torch.tensor([a,b],dtype = torch.complex64)
-    cs /= np.sqrt((cs * cs.conj()).sum())
-    cs = cs.unsqueeze(0).unsqueeze(0).to(self.device)
-    return st * cs
-
-if __name__ == "__main__":
-    device = "cuda" if torch.cuda.is_available() else "cpu"
-    print(f"currently used device : {device}")
+  def Magnetic_phase(self, B: float) -> torch.tensor:
+    X_ = torch.arange(self.dx).reshape(self.dx,1,1)
+    F_ = torch.exp(1j * B * X_)
+    F_ = torch.concat((F_,torch.zeros_like(X_)), dim = 2)
+    F_ = torch.concat((F_,torch.zeros_like(X_)), dim = 2)
+    F_ = torch.concat((F_,torch.exp(-1j * B * X_)), dim = 2)
+    F_final = F_.clone()
+    for _ in range(self.dy-1):
+      F_final = torch.concat((F_final, F_) , dim = 1)
+    return F_final.to(self.device)
+  
+  def Evolve(self):
+    super().Evolve()
+    self.state = self.F[:,:,0::2] * self.state[:,:,0:1] + self.F[:,:,1::2] * self.state[:,:,1:2]
