@@ -61,6 +61,8 @@ class MagneticWalk(SimpleWalk2D, ABC):
     F_final = F_.clone()
     for _ in range(self.dy-1):
       F_final = torch.concat((F_final, F_) , dim = 1)
+
+    print(X_[:5,:5])
     return F_final.to(self.device)
   
   def Evolve(self):
