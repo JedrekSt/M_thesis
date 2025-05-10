@@ -28,8 +28,8 @@ class Walk_prototype(ABC):
   def Evolve(self):
     # we assume that the Coin operator's shape is (dx,dy,4)
     # State vector is described by the tensor (dx,dy,2)
-    self.state = self.Coin2[:,:,0::2].roll(1,0) * self.state[:,:,0:1].roll(1,0) + self.Coin2[:,:,1::2].roll(-1,0) * self.state[:,:,1:2].roll(-1,0)
-    self.state = self.Coin1[:,:,0::2].roll(1,1) * self.state[:,:,0:1].roll(1,1) + self.Coin1[:,:,1::2].roll(-1,1) * self.state[:,:,1:2].roll(-1,1)
+    self.state = self.Coin2[:,:,0::2].roll(1,1) * self.state[:,:,0:1].roll(1,1) + self.Coin2[:,:,1::2].roll(-1,1) * self.state[:,:,1:2].roll(-1,1)
+    self.state = self.Coin1[:,:,0::2].roll(1,0) * self.state[:,:,0:1].roll(1,0) + self.Coin1[:,:,1::2].roll(-1,0) * self.state[:,:,1:2].roll(-1,0)
 
   def Get_prob(self):
     return (torch.abs(self.state[:,:,0])**2 + torch.abs(self.state[:,:,1])**2).to("cpu")
@@ -54,10 +54,10 @@ class MagneticWalk(SimpleWalk2D, ABC):
 
   def Magnetic_phase(self, B: float) -> torch.tensor:
     X_ = torch.arange(self.dx).reshape(self.dx,1,1)
-    F_ = torch.exp(1j * B * X_)
+    F_ = torch.exp(1j * B * (X_ - self.dx // 2))
     F_ = torch.concat((F_,torch.zeros_like(X_)), dim = 2)
     F_ = torch.concat((F_,torch.zeros_like(X_)), dim = 2)
-    F_ = torch.concat((F_,torch.exp(-1j * B * X_)), dim = 2)
+    F_ = torch.concat((F_,torch.exp(-1j * B * (X_ - self.dx // 2))), dim = 2)
     F_final = F_.clone()
     for _ in range(self.dy-1):
       F_final = torch.concat((F_final, F_) , dim = 1)
