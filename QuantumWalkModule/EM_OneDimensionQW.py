@@ -2,6 +2,7 @@ import sys,os
 sys.path.append(os.path.abspath(".."))
 
 import torch
+import numpy as np
 from QuantumWalkModule.OneDimensionQW import QW_1d_uniform_coined
 
 ###########################################################################
@@ -26,7 +27,7 @@ class Electric_QW_1d(QW_1d_uniform_coined):
         if name == "uniform":
             ratio = kwargs.get("ratio",1)
             x_ = torch.arange(0,self.dim)
-            Phi = torch.exp(1j * x_ * ratio).diag()
+            Phi = np.exp(1j * x_ * ratio).diag()
             return Phi.kron(torch.eye(2))
         else:
             raise NotImplementedError

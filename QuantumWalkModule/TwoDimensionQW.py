@@ -54,10 +54,10 @@ class MagneticWalk(SimpleWalk2D, ABC):
 
   def Magnetic_phase(self, B: float) -> torch.tensor:
     X_ = torch.arange(self.dx).reshape(self.dx,1,1)
-    F_ = torch.exp(1j * B * (X_ - self.dx // 2))
+    F_ = np.exp(1j * B * (X_ - self.dx // 2))
     F_ = torch.concat((F_,torch.zeros_like(X_)), dim = 2)
     F_ = torch.concat((F_,torch.zeros_like(X_)), dim = 2)
-    F_ = torch.concat((F_,torch.exp(-1j * B * (X_ - self.dx // 2))), dim = 2)
+    F_ = torch.concat((F_,np.exp(-1j * B * (X_ - self.dx // 2))), dim = 2)
     F_final = F_.clone()
     for _ in range(self.dy-1):
       F_final = torch.concat((F_final, F_) , dim = 1)

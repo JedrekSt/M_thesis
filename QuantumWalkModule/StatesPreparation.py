@@ -14,7 +14,7 @@ class States:
 
     def Gaussian(self, sigma : float, mu : float, a : complex, b: complex) -> torch.tensor:
         x = torch.arange(0,self.dim,1)
-        st = torch.exp( - (x - mu) ** 2 / (2 * sigma ** 2)) 
+        st = np.exp( - (x - mu) ** 2 / (2 * sigma ** 2)) 
         c_st = torch.tensor([a,b])
         st = torch.kron(st,c_st)
         return st / torch.sqrt(st @ st.conj())

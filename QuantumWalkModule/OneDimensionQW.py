@@ -67,7 +67,7 @@ class QW_1d_uniform_coined(QW_base_pure,ABC):
     def Coin(self,**kwargs) -> torch.tensor:
         th = kwargs.get("th", np.pi / 4)
         E,U = torch.linalg.eig(Op.sy)
-        coin = U @ torch.diag(torch.exp(-1j * E * th / 2)) @ U.conj().T
+        coin = U @ torch.diag(np.exp(-1j * E * th / 2)) @ U.conj().T
         return torch.kron(torch.eye(self.dim),coin)
     
 ###########################################################################
@@ -127,7 +127,7 @@ class QW_1d_dm_prototype(QW_base_mixed,ABC):
     def Coin(self,**kwargs) -> torch.tensor:
         th = kwargs.get("th", np.pi / 4)
         E,U = torch.linalg.eig(Op.sy)
-        coin = U @ torch.diag(torch.exp(-1j * E * th / 2)) @ U.conj().T
+        coin = U @ torch.diag(np.exp(-1j * E * th / 2)) @ U.conj().T
         return torch.kron(torch.eye(self.dim),coin)
     
 ###########################################################################

@@ -29,3 +29,14 @@ class BerryPhase:
         ans = lambda ax: np.vstack(tuple( np.diag(op.dag(Ut[:,ax::2]) @ S_ @ Ut[:,ax::2]) for S_ in op.S))
         return ans(0),ans(1)
     
+if __name__ == "__main__":
+
+    from operators import op
+    from oneDimQW import ss_one_dim_QW
+    
+    model = ss_one_dim_QW()
+    berry = BerryPhase()
+    ans_m, ans_p = berry.Calculate(model)
+
+    print(ans_m, ans_p)
+
