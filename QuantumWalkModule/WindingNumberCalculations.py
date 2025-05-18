@@ -53,14 +53,14 @@ class NonHermitian:
         if g == 0 and gamma == 0:
             self.G = torch.eye(2).to(torch.complex64)
         else:
-            self.G = torch.tensor(expm(-1j * g * SX + gamma / 2 * SZ)).to(torch.complex64)
+            self.G = torch.tensor(expm( gamma / 2 * SZ)).to(torch.complex64)
         
     def set_G_inv(self, g : float , gamma : float) -> None : 
         # setting operator
         if g == 0 and gamma == 0:
             self.G_inv = torch.eye(2).to(torch.complex64)
         else:
-            self.G_inv = torch.tensor(expm(1j * g * SX - gamma / 2 * SZ)).to(torch.complex64)
+            self.G_inv = torch.tensor(expm( gamma / 2 * SZ)).to(torch.complex64)
 
     def set_Cup(self, thp : float) -> None :
         # setting operator

@@ -86,6 +86,27 @@ class nonUnitary_QW(ss_one_dim_QW):
         right = np.kron(np.eye(self.dim),op.s_m) + np.kron(T,op.s_p)
         left = np.kron(np.eye(self.dim),op.s_p) + np.kron(op.dag(T),op.s_m)
         return right @ self.G_ @ np.kron(np.eye(self.dim),self.C1) @ left @ self.G_p @ np.kron(np.eye(self.dim),self.C2)
+    
+class nonUnitary_QW2(ss_one_dim_QW):
+    def Evolution(self,**kwargs):
+        n = kwargs.get('n',[0,1,0])
+        del_ = kwargs.get('del',0.01) 
+        g = kwargs.get('g',0.01) 
+        self.th1 = kwargs.get('th1',np.pi/2)
+        self.th2 = kwargs.get('th2',np.pi/2)
+        self.C1 = expm(- 1j * sum(n_ * S_  for n_,S_ in zip(n,op.S) ) * self.th1 / 2)
+        self.C2 = expm(- 1j * sum(n_ * S_  for n_,S_ in zip(n,op.S) ) * self.th2 / 2)
+        self.Sr = np.kron(np.eye(self.dim),op.s_m) + np.kron(op.circ_shift(self.dim,k=1),op.s_p)
+        self.Sl = np.kron(np.eye(self.dim),op.s_p) + np.kron(op.circ_shift(self.dim,k=-1),op.s_m)
+        self.G_ = np.kron(np.eye(self.dim),expm(1j * g * op.sx + del_ * op.sz))
+        self.G_p = np.kron(np.eye(self.dim),expm(-1j * g * op.sx - del_ * op.sz))
+        return self.Sr @ self.G_ @ np.kron(np.eye(self.dim),self.C1) @ self.Sl @ self.G_p @ np.kron(np.eye(self.dim),self.C2)
+
+    def momentum_U(self):
+        T = np.diag(np.exp(-1j*2*np.pi/self.dim * (np.arange(0,self.dim)-self.dim//2)))
+        right = np.kron(np.eye(self.dim),op.s_m) + np.kron(T,op.s_p)
+        left = np.kron(np.eye(self.dim),op.s_p) + np.kron(op.dag(T),op.s_m)
+        return right @ self.G_ @ np.kron(np.eye(self.dim),self.C1) @ left @ self.G_p @ np.kron(np.eye(self.dim),self.C2)
 
 class time_one_dim_QW(one_dim_QW):
 
